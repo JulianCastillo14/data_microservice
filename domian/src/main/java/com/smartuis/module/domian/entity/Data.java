@@ -17,6 +17,10 @@ public class Data {
     @Column(timestamp = true)
     private Instant time;
 
+    public Data () {
+
+    }
+
     public Data(String location, String measurement, Double value){
         this.location = location;
         this.measurement = measurement;

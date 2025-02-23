@@ -4,6 +4,10 @@ public class Metric {
     private String measurement;
     private Double value;
 
+    public Metric(){
+
+    }
+
     public Metric(String measurement, Double value) {
         this.measurement = measurement;
         this.value = value;

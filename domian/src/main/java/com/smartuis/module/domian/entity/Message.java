@@ -6,6 +6,9 @@ public class Message {
     private Header headers;
     private List<Metric> metrics;
 
+    public Message() {
+    }
+
     public Message(Header headers, List<Metric> metrics) {
         this.headers = headers;
         this.metrics = metrics;

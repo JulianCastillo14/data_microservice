@@ -11,6 +11,10 @@ public class Header {
 
     private String location;
 
+    public  Header() {
+
+    }
+
     public Header(String userUUID, String deviceId, String location){
         this.userUUID = userUUID;
         this.deviceId = deviceId;
