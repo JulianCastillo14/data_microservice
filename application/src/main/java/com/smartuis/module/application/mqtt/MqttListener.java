@@ -3,7 +3,7 @@ package com.smartuis.module.application.mqtt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.smartuis.module.domian.entity.Message;
-import com.smartuis.module.persistence.repository.InfluxRepository;
+import com.smartuis.module.domian.repository.MessageRepository;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.mqttv5.client.IMqttToken;
 import org.eclipse.paho.mqttv5.client.MqttCallback;
@@ -15,18 +15,20 @@ import org.eclipse.paho.mqttv5.common.MqttSubscription;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class MqttListener implements MqttCallback {
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "admin";
     private static final String TOPIC = "device/messages";
 
-    private final InfluxRepository influxRepository;
+    private final  List<MessageRepository> messageRepository;
     private final ObjectMapper objectMapper;
     private MqttClient client;
 
-    public MqttListener(InfluxRepository influxRepository) {
-        this.influxRepository = influxRepository;
+    public MqttListener( List<MessageRepository> messageRepository) {
+        this.messageRepository = messageRepository;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         initializeMqttClient();
     }
@@ -57,8 +59,7 @@ public class MqttListener implements MqttCallback {
 
             Message message = objectMapper.readValue(payload, Message.class);
             System.out.println("Parsed message: " + message);
-
-            influxRepository.write(message);
+            messageRepository.forEach(repo->repo.write(message));
         } catch (Exception e) {
             System.err.printf("Error processing message: %s\n", e.getMessage());
             e.printStackTrace();
