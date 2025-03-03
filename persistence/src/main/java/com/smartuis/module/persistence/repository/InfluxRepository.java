@@ -11,6 +11,7 @@ import com.smartuis.module.domian.repository.MessageRepository;
 import org.springframework.stereotype.Repository;
 
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -38,4 +39,31 @@ public class InfluxRepository implements MessageRepository {
 
         return message;
     }
+
+    @Override
+    public List<Message> findMessagesByDeviceId(String deviceId) {
+        return List.of();
+    }
+
+    @Override
+    public List<Message> findMessagesByLocation(String location) {
+        return List.of();
+    }
+
+    @Override
+    public List<Message> findMessagesBetweenTwoDate(Instant from, Instant to) {
+        return List.of();
+    }
+
+    @Override
+    public List<Message> findMessagesInUnitsTime(String time) {
+        return List.of();
+    }
+
+    @Override
+    public List<Message> findMessagesForMetric(String metric, Integer limit) {
+        return List.of();
+    }
+
+
 }
