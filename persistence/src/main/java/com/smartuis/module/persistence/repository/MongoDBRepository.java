@@ -2,6 +2,7 @@ package com.smartuis.module.persistence.repository;
 
 import com.smartuis.module.domian.entity.Message;
 import com.smartuis.module.domian.repository.MessageRepository;
+import com.smartuis.module.persistence.Exceptions.UnitsTimeException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
@@ -47,7 +48,7 @@ public class MongoDBRepository implements MessageRepository {
         System.out.println(time);
         System.out.println(matcher.matches());
         if(!matcher.matches()){
-            throw new RuntimeException("El patron de unidad de tiempo de ser ^(\\d+)(m|s|h)$\n");
+            throw new UnitsTimeException("El patron de unidad de tiempo de ser ^(\\d+)(m|s|h)$\n");
         }
 
         var number = Integer.parseInt(matcher.group(1));
@@ -69,7 +70,7 @@ public class MongoDBRepository implements MessageRepository {
                 fromDate =  nowDate.minus(Duration.ofHours(number));
                 break;
             default:
-                throw new RuntimeException("No existe esa unidad de tiempo");
+                throw new UnitsTimeException("No existe esa unidad de tiempo");
         };
 
 
