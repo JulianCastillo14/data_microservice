@@ -52,7 +52,7 @@ public class MongoController {
 
     @GetMapping("/metrics")
     public ResponseEntity<List<Message>> findMessagesForMetric(@RequestParam String value, @RequestParam(required = false, defaultValue = "20") Integer limit){
-        List<Message> messages = mongoDBRepository.findMessagesForMetric(value, limit);
+        List<Message> messages = mongoDBRepository.findLastMeasurements(value, limit);
         return ResponseEntity.ok(messages);
     }
 }

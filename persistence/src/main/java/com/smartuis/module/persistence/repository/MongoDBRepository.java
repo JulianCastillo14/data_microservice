@@ -1,7 +1,9 @@
 package com.smartuis.module.persistence.repository;
 
 import com.smartuis.module.domian.entity.Message;
+import com.smartuis.module.domian.repository.FilterQuery;
 import com.smartuis.module.domian.repository.MessageRepository;
+import com.smartuis.module.domian.repository.TemporaryQuery;
 import com.smartuis.module.persistence.Exceptions.UnitsTimeException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -9,10 +11,11 @@ import org.springframework.stereotype.Repository;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Repository
-public class MongoDBRepository implements MessageRepository {
+public class MongoDBRepository implements MessageRepository, FilterQuery, TemporaryQuery {
 
     private IMongoRepository imongoRepository;
 
@@ -78,9 +81,17 @@ public class MongoDBRepository implements MessageRepository {
     }
 
     @Override
-    public List<Message> findMessagesForMetric(String metric, Integer limit) {
-        return imongoRepository.findMessagesForMetric(metric, limit);
+    public List<Message> findLastMeasurements(String measurement, int limit) {
+        return imongoRepository.findMessagesForMetric(measurement, limit);
     }
+
+
+    @Override
+    public List<Message> findMeasurementsByTimeRange(String measurement, Instant start, Instant end) {
+        return List.of();
+    }
+
+
 
 
 }

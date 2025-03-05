@@ -1,0 +1,20 @@
+[default]
+  url = "http://localhost:8086"
+  token = "wAjcwICowU3UzrQFiLG-YEd0zcBHZCfiNm-hNISYzr-FFEjz6egI9UAdNb8ICV_HV5nqwIbfpcLkV0sRJqdB1g=="
+  org = "smart-campus"
+  active = true
+# 
+# [eu-central]
+#   url = "https://eu-central-1-1.aws.cloud2.influxdata.com"
+#   token = "XXX"
+#   org = ""
+# 
+# [us-central]
+#   url = "https://us-central1-1.gcp.cloud2.influxdata.com"
+#   token = "XXX"
+#   org = ""
+# 
+# [us-west]
+#   url = "https://us-west-2-1.aws.cloud2.influxdata.com"
+#   token = "XXX"
+#   org = ""
