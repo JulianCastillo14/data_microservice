@@ -25,7 +25,9 @@ public interface IMongoRepository extends MongoRepository<Message, String>{
             "{ '$match' : { 'metrics': { '$elemMatch': { 'measurement':  { '$regex': ?0, '$options': 'i' } } } } }",
             "{ '$limit' : ?1 }"
     })
-    List<Message> findMessagesForMetric(String metric, Integer limit);
+    List<Message> findLastMeasurements(String metric, Integer limit);
 
+    @Query("{'headers.timeStamp': {$gte: ?1, $lt: ?2}, 'metrics.measurement': { '$regex': ?0, '$options': 'i' }}")
+    List<Message> findMeasurementsByTimeRange(String measurement, Instant start, Instant end);
 
 }

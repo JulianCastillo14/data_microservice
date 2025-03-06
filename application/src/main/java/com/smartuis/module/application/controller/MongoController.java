@@ -3,14 +3,10 @@ package com.smartuis.module.application.controller;
 import com.smartuis.module.domian.entity.Message;
 import com.smartuis.module.persistence.repository.MongoDBRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.integration.annotation.Default;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/mongo")
@@ -50,9 +46,17 @@ public class MongoController {
         return ResponseEntity.ok(mongoDBRepository.findMessagesInUnitsTime(time));
     }
 
-    @GetMapping("/metrics")
-    public ResponseEntity<List<Message>> findMessagesForMetric(@RequestParam String value, @RequestParam(required = false, defaultValue = "20") Integer limit){
+    @GetMapping("/measurement/last")
+    public ResponseEntity<List<Message>> findLastMeasurements(@RequestParam String value, @RequestParam(required = false, defaultValue = "20") Integer limit){
         List<Message> messages = mongoDBRepository.findLastMeasurements(value, limit);
+        return ResponseEntity.ok(messages);
+    }
+
+    @GetMapping("/measurement/range")
+    public ResponseEntity<List<Message>> findMeasurementsByTimeRange(@RequestParam String value, @RequestParam String start, @RequestParam String end){
+        Instant fromDate = Instant.parse(start + "T00:00:00Z");
+        Instant toDate = Instant.parse(end + "T23:59:59Z");
+        List<Message> messages = mongoDBRepository.findMeasurementsByTimeRange(value, fromDate, toDate);
         return ResponseEntity.ok(messages);
     }
 }

@@ -82,13 +82,13 @@ public class MongoDBRepository implements MessageRepository, FilterQuery, Tempor
 
     @Override
     public List<Message> findLastMeasurements(String measurement, int limit) {
-        return imongoRepository.findMessagesForMetric(measurement, limit);
+        return imongoRepository.findLastMeasurements(measurement, limit);
     }
 
 
     @Override
     public List<Message> findMeasurementsByTimeRange(String measurement, Instant start, Instant end) {
-        return List.of();
+        return imongoRepository.findMeasurementsByTimeRange(measurement, start, end);
     }
 
 
