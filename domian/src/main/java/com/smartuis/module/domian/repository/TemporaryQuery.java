@@ -10,7 +10,6 @@ public interface TemporaryQuery {
     List<Message> findMessagesBetweenTwoDate(Instant from, Instant to);
     List<Message> findMessagesInUnitsTime(String time);
     List<Message> findLastMeasurements(String measurement, int limit);
-    List<Message> findMeasurementsByTimeRange(String measurement, Instant start, Instant end);
-
+    List<Message>  findMeasurementsByTimeRange(String measurement, Instant start, Instant end);
 
 }

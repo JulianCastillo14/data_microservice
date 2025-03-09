@@ -4,14 +4,12 @@ import com.smartuis.module.domian.entity.Message;
 import com.smartuis.module.domian.repository.FilterQuery;
 import com.smartuis.module.domian.repository.MessageRepository;
 import com.smartuis.module.domian.repository.TemporaryQuery;
-import com.smartuis.module.persistence.Exceptions.UnitsTimeException;
-import org.springframework.http.ResponseEntity;
+import com.smartuis.module.persistence.exceptions.UnitsTimeException;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Repository

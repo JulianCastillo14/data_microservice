@@ -1,5 +1,6 @@
 package com.smartuis.module.application.controller;
 
+import com.influxdb.query.FluxTable;
 import com.smartuis.module.domian.entity.Message;
 import com.smartuis.module.persistence.repository.MongoDBRepository;
 import org.springframework.http.ResponseEntity;

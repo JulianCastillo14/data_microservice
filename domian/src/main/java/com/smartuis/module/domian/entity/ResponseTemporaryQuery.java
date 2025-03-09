@@ -4,12 +4,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResponseQuery {
+public class ResponseTemporaryQuery {
     private Instant start;
     private Instant end;
     private List<DataDTO> data;
 
-    public ResponseQuery(Instant start, Instant end) {
+    public ResponseTemporaryQuery(Instant start, Instant end) {
         this.start = start;
         this.end = end;
         this.data = new ArrayList<>();

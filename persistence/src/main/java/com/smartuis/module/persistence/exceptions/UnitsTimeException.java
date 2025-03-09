@@ -1,4 +1,4 @@
-package com.smartuis.module.persistence.Exceptions;
+package com.smartuis.module.persistence.exceptions;
 
 public class UnitsTimeException extends RuntimeException{
 

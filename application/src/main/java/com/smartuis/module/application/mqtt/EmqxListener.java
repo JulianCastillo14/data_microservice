@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class MqttListener implements MqttCallback {
+public class EmqxListener implements MqttCallback {
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "admin";
     private static final String TOPIC = "device/messages";
@@ -27,7 +27,7 @@ public class MqttListener implements MqttCallback {
     private final ObjectMapper objectMapper;
     private MqttClient client;
 
-    public MqttListener( List<MessageRepository> messageRepository) {
+    public EmqxListener(List<MessageRepository> messageRepository) {
         this.messageRepository = messageRepository;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         initializeMqttClient();

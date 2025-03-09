@@ -57,4 +57,6 @@ public class InfluxDBConfig {
     public void setToken(String token) {
         this.token = token;
     }
+
+
 }

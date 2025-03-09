@@ -1,5 +1,6 @@
 package com.smartuis.module.persistence.repository;
 
+import com.influxdb.query.FluxTable;
 import com.smartuis.module.domian.entity.Message;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;

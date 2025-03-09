@@ -1,6 +1,6 @@
 package com.smartuis.module.application.controller;
 
-import com.smartuis.module.persistence.Exceptions.UnitsTimeException;
+import com.smartuis.module.persistence.exceptions.UnitsTimeException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

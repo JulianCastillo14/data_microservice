@@ -6,7 +6,6 @@ import java.util.List;
 
 @Document(collection = "messages")
 public class Message {
-    private String idMessage;
     private Header headers;
     private List<Metric> metrics;
 
