@@ -1,15 +1,11 @@
 package com.smartuis.module.application.controller;
 
-import com.influxdb.query.FluxRecord;
-import com.influxdb.query.FluxTable;
+import com.smartuis.module.application.mapper.MessageMapper;
 import com.smartuis.module.domian.entity.*;
 import com.smartuis.module.persistence.repository.InfluxRepository;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +14,11 @@ import java.util.Optional;
 public class InfluxController {
 
     private InfluxRepository influxRepository;
+    private MessageMapper messageMapper;
 
-    public InfluxController(InfluxRepository influxRepository) {
+    public InfluxController(InfluxRepository influxRepository, MessageMapper messageMapper) {
         this.influxRepository = influxRepository;
+        this.messageMapper = messageMapper;
     }
 
     @GetMapping("/measurement/{measurement}/last")
@@ -28,7 +26,12 @@ public class InfluxController {
             @PathVariable String measurement,
             @RequestParam(defaultValue = "10") int limit) {
         List<Message> messages = influxRepository.findLastMeasurements(measurement, limit);
-        return transformMessagesToResponse(messages);
+        Instant start = messages.get(messages.size() - 1).getHeader().getTimeStamp();
+        Instant end = messages.get(0).getHeader().getTimeStamp();
+        List<DataDTO> dataDTOs = messageMapper.mapMessagesToDataDTOs(messages);
+        ResponseTemporaryQuery response = new ResponseTemporaryQuery(start, end);
+        response.setData(dataDTOs);
+        return response;
     }
 
     @GetMapping("/by-time-range/measurement/{measurement}")
@@ -37,7 +40,12 @@ public class InfluxController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end){
         List<Message> messages = influxRepository.findMeasurementsByTimeRange(measurement, start, end);
-        return transformMessagesToResponseRange(messages);
+        start = messages.get(0).getHeader().getTimeStamp();
+        end = messages.get(messages.size() - 1).getHeader().getTimeStamp();
+        List<DataDTO> dataDTOs = messageMapper.mapMessagesToDataDTOs(messages);
+        ResponseTemporaryQuery response = new ResponseTemporaryQuery(start, end);
+        response.setData(dataDTOs);
+        return response;
     }
 
     @GetMapping("/by-time-range")
@@ -45,15 +53,24 @@ public class InfluxController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end){
         List<Message> messages = influxRepository.findMessagesBetweenTwoDate(start, end);
-        return transformMessagesToResponseRange(messages);
+        start = messages.get(0).getHeader().getTimeStamp();
+        end = messages.get(messages.size() - 1).getHeader().getTimeStamp();
+        List<DataDTO> dataDTOs = messageMapper.mapMessagesToDataDTOs(messages);
+        ResponseTemporaryQuery response = new ResponseTemporaryQuery(start, end);
+        response.setData(dataDTOs);
+        return response;
     }
 
     @GetMapping("/date/units/{time}")
     public ResponseTemporaryQuery getMessagesInUnitsTime(
             @PathVariable String time){
-
         List<Message> messages = influxRepository.findMessagesInUnitsTime(time);
-        return transformMessagesToResponseRange(messages);
+        Instant start = messages.get(0).getHeader().getTimeStamp();
+        Instant end = messages.get(messages.size() - 1).getHeader().getTimeStamp();
+        List<DataDTO> dataDTOs = messageMapper.mapMessagesToDataDTOs(messages);
+        ResponseTemporaryQuery response = new ResponseTemporaryQuery(start, end);
+        response.setData(dataDTOs);
+        return response;
     }
 
     @GetMapping("/measurement/{measurement}/average")
@@ -81,47 +98,5 @@ public class InfluxController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end) {
         Optional<Double> max = influxRepository.findMaxValue(measurement, start, end);
         return max;
-    }
-
-    public ResponseTemporaryQuery transformMessagesToResponse(List<Message> messages){
-        Instant start = messages.get(messages.size() - 1).getHeader().getTimeStamp();
-        Instant end = messages.get(0).getHeader().getTimeStamp();
-
-        ResponseTemporaryQuery responseTemporaryQuery = new ResponseTemporaryQuery(start, end);
-        List<DataDTO> dataDTO = new ArrayList<>();
-        for (Message message : messages) {
-            Header header = message.getHeader();
-            for (Metric metric : message.getMetrics()) {
-                dataDTO.add(new DataDTO(
-                        header.getLocation(),
-                        metric.getMeasurement(),
-                        metric.getValue(),
-                        header.getTimeStamp()
-                ));
-            }
-        }
-        responseTemporaryQuery.setData(dataDTO);
-        return responseTemporaryQuery;
-    }
-
-    public ResponseTemporaryQuery transformMessagesToResponseRange(List<Message> messages){
-        Instant start = messages.get(0).getHeader().getTimeStamp();
-        Instant end = messages.get(messages.size() - 1).getHeader().getTimeStamp();
-
-        ResponseTemporaryQuery responseTemporaryQuery = new ResponseTemporaryQuery(start, end);
-        List<DataDTO> dataDTO = new ArrayList<>();
-        for (Message message : messages) {
-            Header header = message.getHeader();
-            for (Metric metric : message.getMetrics()) {
-                dataDTO.add(new DataDTO(
-                        header.getLocation(),
-                        metric.getMeasurement(),
-                        metric.getValue(),
-                        header.getTimeStamp()
-                ));
-            }
-        }
-        responseTemporaryQuery.setData(dataDTO);
-        return responseTemporaryQuery;
     }
 }

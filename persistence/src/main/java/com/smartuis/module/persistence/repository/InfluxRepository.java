@@ -1,23 +1,20 @@
 package com.smartuis.module.persistence.repository;
 
-
 import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
 import com.influxdb.client.domain.WritePrecision;
-import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
+import com.module.service.impl.InfluxService;
 import com.smartuis.module.domian.entity.Data;
-import com.smartuis.module.domian.entity.Header;
 import com.smartuis.module.domian.entity.Message;
 import com.smartuis.module.domian.entity.Metric;
 import com.smartuis.module.domian.repository.MessageRepository;
 import com.smartuis.module.domian.repository.StatisticsQuery;
 import com.smartuis.module.domian.repository.TemporaryQuery;
 import com.smartuis.module.persistence.config.InfluxDBConfig;
+import com.smartuis.module.persistence.mapper.FluxRecordMapper;
 import org.springframework.stereotype.Repository;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +23,14 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
 
     private InfluxDBClient influxDBClient;
     private String bucket;
+    private FluxRecordMapper fluxRecordMapper;
+    private InfluxService influxService;
 
-    public InfluxRepository(InfluxDBClient influxDBClient, InfluxDBConfig influxDBConfig) {
+    public InfluxRepository(InfluxDBClient influxDBClient, InfluxDBConfig influxDBConfig, InfluxService influxService) {
         this.influxDBClient = influxDBClient;
         this.bucket = influxDBConfig.getBucket();
+        this.fluxRecordMapper = new FluxRecordMapper();
+        this.influxService = influxService;
     }
 
     @Override
@@ -57,10 +58,9 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                         "|> limit(n: %d)",
                 bucket , measurement, limit);
 
-        List<FluxTable> tables = queryData(flux);
-        List<Message> messages = transformMessagesToResponse(tables);
+        List<FluxTable> tables = influxService.queryData(flux);
 
-        return messages;
+        return fluxRecordMapper.mapFluxTablesToMessages(tables);
     }
 
     @Override
@@ -70,10 +70,8 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                         "|> filter(fn: (r) => r._measurement == \"%s\")",
                 bucket, start.toString(), end.toString(), measurement);
 
-        List<FluxTable> tables = queryData(flux);
-        List<Message> messages = transformMessagesToResponse(tables);
-
-        return messages;
+        List<FluxTable> tables = influxService.queryData(flux);
+        return fluxRecordMapper.mapFluxTablesToMessages(tables);
     }
 
     @Override
@@ -82,9 +80,8 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                 "from(bucket: \"%s\") |> range(start: %s, stop: %s) |> sort(columns:[\"_time\"])",
                 bucket, from.toString(), to.toString()
         );
-        List<FluxTable> tables = queryData(flux);
-        List<Message> messages = transformMessagesToResponse(tables);
-        return messages;
+        List<FluxTable> tables = influxService.queryData(flux);
+        return fluxRecordMapper.mapFluxTablesToMessages(tables);
     }
 
     @Override
@@ -93,11 +90,9 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                 "from(bucket: \"%s\") |> range(start: -%s) |> sort(columns:[\"_time\"])",
                 bucket, time
         );
-        List<FluxTable> tables = queryData(flux);
-        List<Message> messages = transformMessagesToResponse(tables);
-        return messages;
+        List<FluxTable> tables = influxService.queryData(flux);
+        return fluxRecordMapper.mapFluxTablesToMessages(tables);
     }
-
 
 
     @Override
@@ -107,7 +102,7 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                         "|> filter(fn: (r) => r._measurement == \"%s\" and r._field == \"value\") " +
                         "|> mean()",
                 bucket, start.toString(), end.toString(), measurement);
-        List<FluxTable> tables = queryData(flux);
+        List<FluxTable> tables = influxService.queryData(flux);
         if (!tables.isEmpty() && !tables.get(0).getRecords().isEmpty()) {
             Object value = tables.get(0).getRecords().get(0).getValue();
             if (value instanceof Number) {
@@ -125,7 +120,7 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                         "|> max()",
                 bucket, start.toString(), end.toString(), measurement);
 
-        List<FluxTable> tables = queryData(flux);
+        List<FluxTable> tables = influxService.queryData(flux);
 
         if (!tables.isEmpty() && !tables.get(0).getRecords().isEmpty()) {
             Object value = tables.get(0).getRecords().get(0).getValue();
@@ -145,7 +140,7 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                         "|> filter(fn: (r) => r._measurement == \"%s\" and r._field == \"value\") " +
                         "|> min()",
                 bucket, start.toString(), end.toString(), measurement);
-        List<FluxTable> tables = queryData(flux);
+        List<FluxTable> tables = influxService.queryData(flux);
 
         if (!tables.isEmpty() && !tables.get(0).getRecords().isEmpty()) {
             Object value = tables.get(0).getRecords().get(0).getValue();
@@ -153,35 +148,6 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
                 return Optional.of(((Number) value).doubleValue());
             }
         }
-
         return Optional.empty();
     }
-
-    public List<FluxTable> queryData(String query) {
-        QueryApi queryApi = influxDBClient.getQueryApi();
-        return queryApi.query(query);
-    }
-
-    public List<Message> transformMessagesToResponse(List<FluxTable> tables) {
-        List<Message> messages = new ArrayList<>();
-
-        for (FluxTable table : tables) {
-            for(FluxRecord  record : table.getRecords()){
-                String location = (String) record.getValues().get("location");
-                String _measurement = (String) record.getValues().get("_measurement");
-                Double value = (Double) record.getValues().get("_value");
-                Instant time = (Instant) record.getValues().get("_time");
-
-                Header header = new Header(null, null, location);
-                header.setTimeStamp(time);
-
-                Metric metric = new Metric(_measurement, value);
-
-                messages.add(new Message(header, List.of(metric)));
-            }
-        }
-        return messages;
-    }
-
-
 }
