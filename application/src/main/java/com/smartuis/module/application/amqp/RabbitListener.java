@@ -3,7 +3,6 @@ package com.smartuis.module.application.amqp;
 
 import com.smartuis.module.domian.entity.Message;
 import com.smartuis.module.domian.repository.MessageRepository;
-import com.smartuis.module.persistence.repository.InfluxRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

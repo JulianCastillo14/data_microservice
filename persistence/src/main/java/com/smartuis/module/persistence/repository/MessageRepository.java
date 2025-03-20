@@ -2,7 +2,6 @@ package com.smartuis.module.persistence.repository;
 
 import com.smartuis.module.domian.entity.Message;
 import com.smartuis.module.domian.repository.FilterQuery;
-import com.smartuis.module.domian.repository.MessageRepository;
 import com.smartuis.module.domian.repository.TemporaryQuery;
 import com.smartuis.module.persistence.exceptions.UnitsTimeException;
 import org.springframework.stereotype.Repository;
@@ -13,33 +12,33 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Repository
-public class MongoDBRepository implements MessageRepository, FilterQuery, TemporaryQuery {
+public class MessageRepository implements com.smartuis.module.domian.repository.MessageRepository, FilterQuery, TemporaryQuery {
 
-    private IMongoRepository imongoRepository;
+    private IMessageRepository iMessageRepository;
 
-    public MongoDBRepository(IMongoRepository imongoRepository) {
-        this.imongoRepository = imongoRepository;
+    public MessageRepository(IMessageRepository iMessageRepository) {
+        this.iMessageRepository = iMessageRepository;
     }
 
 
     @Override
     public Message write(Message message) {
-        return imongoRepository.save(message);
+        return iMessageRepository.save(message);
     }
 
     @Override
     public List<Message> findMessagesByDeviceId(String deviceId) {
-        return imongoRepository.findMessagesByDeviceId(deviceId);
+        return iMessageRepository.findMessagesByDeviceId(deviceId);
     }
 
     @Override
     public List<Message> findMessagesByLocation(String location) {
-        return imongoRepository.findMessagesByLocation(location);
+        return iMessageRepository.findMessagesByLocation(location);
     }
 
     @Override
     public List<Message> findMessagesBetweenTwoDate(Instant from, Instant to) {
-        return imongoRepository.findMessagesBetweenTwoDate(from, to);
+        return iMessageRepository.findMessagesBetweenTwoDate(from, to);
     }
 
     @Override
@@ -75,18 +74,18 @@ public class MongoDBRepository implements MessageRepository, FilterQuery, Tempor
         };
 
 
-        return imongoRepository.findMessagesBetweenTwoDate(fromDate, nowDate);
+        return iMessageRepository.findMessagesBetweenTwoDate(fromDate, nowDate);
     }
 
     @Override
     public List<Message> findLastMeasurements(String measurement, int limit) {
-        return imongoRepository.findLastMeasurements(measurement, limit);
+        return iMessageRepository.findLastMeasurements(measurement, limit);
     }
 
 
     @Override
     public List<Message> findMeasurementsByTimeRange(String measurement, Instant start, Instant end) {
-        return imongoRepository.findMeasurementsByTimeRange(measurement, start, end);
+        return iMessageRepository.findMeasurementsByTimeRange(measurement, start, end);
     }
 
 

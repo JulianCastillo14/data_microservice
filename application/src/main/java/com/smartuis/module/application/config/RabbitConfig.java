@@ -10,7 +10,7 @@ public class RabbitConfig {
 
     @Bean
     public FanoutExchange topicExchange(){
-        return new FanoutExchange("device-messages");
+        return new FanoutExchange("device/messages");
     }
 
     @Bean

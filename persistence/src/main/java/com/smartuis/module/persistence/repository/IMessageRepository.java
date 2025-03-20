@@ -1,6 +1,5 @@
 package com.smartuis.module.persistence.repository;
 
-import com.influxdb.query.FluxTable;
 import com.smartuis.module.domian.entity.Message;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,7 +10,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Repository
-public interface IMongoRepository extends MongoRepository<Message, String>{
+public interface IMessageRepository extends MongoRepository<Message, String>{
 
     @Query("{'headers.deviceId': ?0}")
     List<Message> findMessagesByDeviceId(String deviceId);

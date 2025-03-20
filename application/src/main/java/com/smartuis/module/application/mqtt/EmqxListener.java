@@ -43,10 +43,7 @@ public class EmqxListener implements MqttCallback {
 
             MqttSubscription[] subscriptions = {new MqttSubscription(TOPIC, 1)};
             client.subscribe(subscriptions);
-
-            System.out.println("Subscribed to topic: " + TOPIC);
         } catch (MqttException e) {
-            System.err.println("Error initializing MQTT Client: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -55,13 +52,10 @@ public class EmqxListener implements MqttCallback {
     public void messageArrived(String topic, MqttMessage mqttMessage) {
         try {
             String payload = new String(mqttMessage.getPayload());
-            System.out.println("Received message on topic [" + topic + "]: " + payload);
 
             Message message = objectMapper.readValue(payload, Message.class);
-            System.out.println("Parsed message: " + message);
             messageRepository.forEach(repo->repo.write(message));
         } catch (Exception e) {
-            System.err.printf("Error processing message: %s\n", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -81,7 +75,6 @@ public class EmqxListener implements MqttCallback {
 
     @Override
     public void connectComplete(boolean reconnect, String serverURI) {
-        System.out.println("Connected to MQTT Broker: " + serverURI);
     }
 
     @Override
