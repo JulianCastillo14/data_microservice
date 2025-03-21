@@ -58,8 +58,15 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
 
             for(Application application : applications){
                 if(message.getHeader().getTopic().equals(application.getName())){
-                    mqttRequeueService.requeue(message);
-                    amqpRequeueService.requeue(message);
+                    Header header = (Header) message.getHeader().clone();
+                    Message  messageRequeue = new Message();
+                    messageRequeue.setHeader(header);
+                    messageRequeue.setMetrics(message.getMetrics());
+
+                    String newTopic = messageRequeue.getHeader().getTopic() + "/" + application.getApplicationId();
+                    messageRequeue.getHeader().setTopic(newTopic);
+                    mqttRequeueService.requeue(messageRequeue);
+                    amqpRequeueService.requeue(messageRequeue);
                 }
             }
 

@@ -27,10 +27,7 @@ public class AmqpRequeueService {
             rabbitAdmin.declareExchange(fanoutExchange);
             rabbitAdmin.declareBinding(BindingBuilder.bind(anonymousQueue).to(fanoutExchange));
             rabbitTemplate.convertAndSend(targetExchange, "", message);
-
-            System.out.println("Mensaje reencolado en RabbitMQ en el exchange '" + targetExchange + "': " + message);
         } catch (Exception e) {
-            System.err.println("Error al reencolar el mensaje en RabbitMQ: " + e.getMessage());
             e.printStackTrace();
         }
     }

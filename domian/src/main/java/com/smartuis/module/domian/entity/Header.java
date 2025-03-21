@@ -1,8 +1,9 @@
 package com.smartuis.module.domian.entity;
 
+import java.io.Serializable;
 import java.time.Instant;
 
-public class Header {
+public class Header implements Cloneable{
     private String userUUID;
     private String deviceId;
     private Instant timeStamp;
@@ -82,5 +83,15 @@ public class Header {
                 ", topic='" + topic + '\'' +
                 ", shouldRequeue=" + shouldRequeue +
                 '}';
+    }
+
+    @Override
+    public Header clone() {
+        try {
+            Header clone = (Header) super.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
