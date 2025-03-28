@@ -6,6 +6,7 @@ import com.smartuis.module.persistence.exceptions.UnitsTimeException;
 import com.smartuis.module.persistence.exceptions.UploadFileException;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,6 +24,8 @@ public class CameraThread extends Thread {
     private Boolean paused;
     private final String extension;
     private BlockingQueue<Exception> exceptionQueue;
+    @Value("{video.duration}")
+    long duration;
 
     public CameraThread(StorageRepository storageRepository, String idThread, String urlConnect, BlockingQueue<Exception> exceptionQueue){
         this.storageRepository = storageRepository;
@@ -39,7 +42,7 @@ public class CameraThread extends Thread {
         try {
             startRecord(this.urlConnect);
         } catch (FFmpegFrameRecorder.Exception | FFmpegFrameGrabber.Exception | InterruptedException e) {
-            new ConectionStorageException("Hubo un erro con la conexion");
+            exceptionQueue.offer(new ConectionStorageException("Hubo un erro con la conexion"));
         }
     }
 
@@ -59,7 +62,6 @@ public class CameraThread extends Thread {
                 recorder.start();
                 long lastTime = System.currentTimeMillis();
                 long activeTimeElapsed = 0;
-                long duration = 1 * 60 * 1000;
 
                 while (activeTimeElapsed < duration && !isInterrupted()) {
                     synchronized (this) {

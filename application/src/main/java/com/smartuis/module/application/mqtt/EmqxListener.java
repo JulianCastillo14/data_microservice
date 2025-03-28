@@ -13,15 +13,13 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class EmqxListener implements MqttCallback {
-    private static final String BROKER_URL = "tcp://localhost:1883";
-    private static final String CLIENT_ID = "admin";
-    private static final String TOPIC = "device/messages";
 
     private final  List<MessageRepository> messageRepository;
     private final ObjectMapper objectMapper;
@@ -30,22 +28,10 @@ public class EmqxListener implements MqttCallback {
     public EmqxListener(List<MessageRepository> messageRepository) {
         this.messageRepository = messageRepository;
         this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        initializeMqttClient();
     }
 
-    private void initializeMqttClient() {
-        try {
-            client = new MqttClient(BROKER_URL, CLIENT_ID);
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setCleanSession(true);
-            client.setCallback(this);
-            client.connect();
-
-            MqttSubscription[] subscriptions = {new MqttSubscription(TOPIC, 1)};
-            client.subscribe(subscriptions);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+    public void setClient(MqttClient client) {
+        this.client = client;
     }
 
     @Override

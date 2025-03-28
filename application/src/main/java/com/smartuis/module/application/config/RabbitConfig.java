@@ -2,15 +2,19 @@ package com.smartuis.module.application.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
 
+    @Value("${topic.listener}")
+    private String topic;
+
     @Bean
     public FanoutExchange topicExchange(){
-        return new FanoutExchange("device/messages");
+        return new FanoutExchange(topic);
     }
 
     @Bean

@@ -7,13 +7,15 @@ import org.eclipse.paho.mqttv5.client.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 public class MqttRequeueService {
-    private static final String BROKER_URL = "tcp://localhost:1883";
+    @Value("${mqtt.broker.url}")
+    private String BROKER_URL;
     private final ObjectMapper objectMapper;
 
     public MqttRequeueService() {

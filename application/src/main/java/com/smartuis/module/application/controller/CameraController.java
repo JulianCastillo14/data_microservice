@@ -32,11 +32,9 @@ public class CameraController {
     private StorageRepository storageRepository;
     private ListCameraThread listCameraThread;
     private CameraRepository cameraRepository;
-    private CameraMapper cameraMapper;
 
-    public CameraController(StorageRepository storageRepository, CameraRepository cameraRepository, CameraMapper cameraMapper) {
+    public CameraController(StorageRepository storageRepository, CameraRepository cameraRepository) {
         this.storageRepository = storageRepository;
-        this.cameraMapper = cameraMapper;
         this.listCameraThread = listCameraThread.getInstance();
         this.cameraRepository = cameraRepository;
     }
@@ -99,7 +97,7 @@ public class CameraController {
         cameraThread.start();
 
         try {
-            Exception exceptionHilo = exceptionQueue.poll(2,TimeUnit.SECONDS);
+            Exception exceptionHilo = exceptionQueue.poll(1,TimeUnit.SECONDS);
             if (exceptionHilo != null) {
                 throw exceptionHilo;
             }
@@ -107,7 +105,7 @@ public class CameraController {
             listCameraThread.getThreads().add(cameraThread);
             camera.setState(StateCamera.Recording);
             cameraRepository.save(camera);
-            CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
+            CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
             return ResponseEntity.ok(cameraDTO);
         } catch (Exception e) {
             throw new ConectionStorageException("Hubo un erro con la conexion");
@@ -135,7 +133,7 @@ public class CameraController {
 
         camera.setState(StateCamera.Stopped);
         cameraRepository.save(camera);
-        CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
+        CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
         return ResponseEntity.ok().body(cameraDTO);
     }
 
@@ -157,7 +155,7 @@ public class CameraController {
         reproductor.pauseRecord();
         camera.setState(StateCamera.Paused);
         cameraRepository.save(camera);
-        CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
+        CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
         return ResponseEntity.ok().body(cameraDTO);
     }
 
@@ -179,7 +177,7 @@ public class CameraController {
         reproductor.resumeRecord();
         camera.setState(StateCamera.Recording);
         cameraRepository.save(camera);
-        CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
+        CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
         return ResponseEntity.ok(cameraDTO);
     }
 
@@ -211,7 +209,7 @@ public class CameraController {
             cameraRepository.saveAll(cameras);
         }
 
-        return cameraMapper.mapCameraToCameraDTO(cameras);
+        return CameraMapper.mapCameraToCameraDTO(cameras);
     }
 
 
