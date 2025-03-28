@@ -37,26 +37,30 @@ public class InfluxController {
     @GetMapping("/by-time-range/measurement/{measurement}")
     public ResponseTemporaryQuery getMeasurementsByTimeRangeMeasurement(
             @PathVariable String measurement,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end){
-        List<Message> messages = influxRepository.findMeasurementsByTimeRange(measurement, start, end);
-        start = messages.get(0).getHeader().getTimeStamp();
-        end = messages.get(messages.size() - 1).getHeader().getTimeStamp();
+            @RequestParam String start,
+            @RequestParam String end){
+        Instant startDate = Instant.parse(start + "T00:00:00Z");
+        Instant endDate = Instant.parse(end + "T23:59:59Z");
+        List<Message> messages = influxRepository.findMeasurementsByTimeRange(measurement, startDate, endDate);
+        startDate = messages.get(0).getHeader().getTimeStamp();
+        endDate = messages.get(messages.size() - 1).getHeader().getTimeStamp();
         List<DataDTO> dataDTOs = messageMapper.mapMessagesToDataDTOs(messages);
-        ResponseTemporaryQuery response = new ResponseTemporaryQuery(start, end);
+        ResponseTemporaryQuery response = new ResponseTemporaryQuery(startDate, endDate);
         response.setData(dataDTOs);
         return response;
     }
 
     @GetMapping("/by-time-range")
     public ResponseTemporaryQuery getMeasurementsByTimeRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end){
-        List<Message> messages = influxRepository.findMessagesBetweenTwoDate(start, end);
-        start = messages.get(0).getHeader().getTimeStamp();
-        end = messages.get(messages.size() - 1).getHeader().getTimeStamp();
+            @RequestParam String start,
+            @RequestParam String end){
+        Instant startDate = Instant.parse(start + "T00:00:00Z");
+        Instant endDate = Instant.parse(end + "T23:59:59Z");
+        List<Message> messages = influxRepository.findMessagesBetweenTwoDate(startDate, endDate);
+        Instant startResponse = messages.get(0).getHeader().getTimeStamp();
+        Instant endResponse = messages.get(messages.size() - 1).getHeader().getTimeStamp();
         List<DataDTO> dataDTOs = messageMapper.mapMessagesToDataDTOs(messages);
-        ResponseTemporaryQuery response = new ResponseTemporaryQuery(start, end);
+        ResponseTemporaryQuery response = new ResponseTemporaryQuery(startResponse, endResponse);
         response.setData(dataDTOs);
         return response;
     }
@@ -76,27 +80,33 @@ public class InfluxController {
     @GetMapping("/measurement/{measurement}/average")
     public Optional<Double> getMeasurementAverage(
             @PathVariable String measurement,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end){
-        Optional<Double> average = influxRepository.findAverageValue(measurement, start, end);
+            @RequestParam String start,
+            @RequestParam String end){
+        Instant startDate = Instant.parse(start + "T00:00:00Z");
+        Instant endDate = Instant.parse(end + "T23:59:59Z");
+        Optional<Double> average = influxRepository.findAverageValue(measurement, startDate, endDate);
         return average;
     }
 
     @GetMapping("/measurement/{measurement}/min")
     public Optional<Double> getMinimum(
             @PathVariable String measurement,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end) {
-        Optional<Double> min = influxRepository.findMinValue(measurement, start, end);
+            @RequestParam String start,
+            @RequestParam String end) {
+        Instant startDate = Instant.parse(start + "T00:00:00Z");
+        Instant endDate = Instant.parse(end + "T23:59:59Z");
+        Optional<Double> min = influxRepository.findMinValue(measurement, startDate, endDate);
         return min;
     }
 
     @GetMapping("/measurement/{measurement}/max")
     public Optional<Double> getMaximum(
             @PathVariable String measurement,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME ) Instant end) {
-        Optional<Double> max = influxRepository.findMaxValue(measurement, start, end);
+            @RequestParam String start,
+            @RequestParam String end) {
+        Instant startDate = Instant.parse(start + "T00:00:00Z");
+        Instant endDate = Instant.parse(end + "T23:59:59Z");
+        Optional<Double> max = influxRepository.findMaxValue(measurement, startDate, endDate);
         return max;
     }
 }

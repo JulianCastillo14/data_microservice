@@ -33,11 +33,10 @@ public class MongoController {
     }
 
     @GetMapping("/date")
-    public ResponseEntity<List<Message>> findMessagesByLocation(@RequestParam String from, @RequestParam String to){
-        Instant fromDate = Instant.parse(from + "T00:00:00Z");
-        Instant toDate = Instant.parse(to + "T23:59:59Z");
-        System.out.println(from + " " +  to);
-        List<Message> messages = messageRepository.findMessagesBetweenTwoDate(fromDate, toDate);
+    public ResponseEntity<List<Message>> findMessagesByLocation(@RequestParam String start, @RequestParam String end){
+        Instant startDate = Instant.parse(start + "T00:00:00Z");
+        Instant endDate = Instant.parse(end + "T23:59:59Z");
+        List<Message> messages = messageRepository.findMessagesBetweenTwoDate(startDate, endDate);
         return ResponseEntity.ok(messages);
     }
 
@@ -47,16 +46,16 @@ public class MongoController {
     }
 
     @GetMapping("/measurement/last")
-    public ResponseEntity<List<Message>> findLastMeasurements(@RequestParam String value, @RequestParam(required = false, defaultValue = "20") Integer limit){
-        List<Message> messages = messageRepository.findLastMeasurements(value, limit);
+    public ResponseEntity<List<Message>> findLastMeasurements(@RequestParam String measurement, @RequestParam(required = false, defaultValue = "20") Integer limit){
+        List<Message> messages = messageRepository.findLastMeasurements(measurement, limit);
         return ResponseEntity.ok(messages);
     }
 
     @GetMapping("/measurement/range")
-    public ResponseEntity<List<Message>> findMeasurementsByTimeRange(@RequestParam String value, @RequestParam String start, @RequestParam String end){
+    public ResponseEntity<List<Message>> findMeasurementsByTimeRange(@RequestParam String measurement, @RequestParam String start, @RequestParam String end){
         Instant fromDate = Instant.parse(start + "T00:00:00Z");
         Instant toDate = Instant.parse(end + "T23:59:59Z");
-        List<Message> messages = messageRepository.findMeasurementsByTimeRange(value, fromDate, toDate);
+        List<Message> messages = messageRepository.findMeasurementsByTimeRange(measurement, fromDate, toDate);
         return ResponseEntity.ok(messages);
     }
 }

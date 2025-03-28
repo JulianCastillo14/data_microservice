@@ -1,0 +1,60 @@
+services:
+  influxdb:
+    image: influxdb:2
+    restart: always
+    ports:
+      - 8086:8086
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USER}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+    networks:
+      - iot_campus_uis
+    volumes:
+      - $PWD/data:/var/lib/influxdb2
+      - $PWD/config:/etc/influxdb2
+
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
+    networks:
+      - iot_campus_uis
+    volumes:
+      - $PWD/mongodb_data:/data/db
+
+  rabbitmq:
+    image: 4.0-management
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - iot_campus_uis
+
+  emqx:
+    image: emqx:5.8.6
+    restart: always
+    ports:
+      - 1883:1883
+      - 8083:8083
+      - 8084:8084
+      - 8883:8883
+      - 18083:18083
+    networks:
+      - iot_campus_uis
+
+  minio:
+
+
+
+
+
+
