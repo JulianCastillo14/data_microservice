@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +33,13 @@ public class CameraController {
     private StorageRepository storageRepository;
     private ListCameraThread listCameraThread;
     private CameraRepository cameraRepository;
+    private CameraMapper cameraMapper;
+    @Value("${video.duration.minutes}")
+    private long durationRecord;
 
-    public CameraController(StorageRepository storageRepository, CameraRepository cameraRepository) {
+    public CameraController(StorageRepository storageRepository, CameraRepository cameraRepository, CameraMapper cameraMapper) {
         this.storageRepository = storageRepository;
+        this.cameraMapper = cameraMapper;
         this.listCameraThread = listCameraThread.getInstance();
         this.cameraRepository = cameraRepository;
     }
@@ -93,11 +98,11 @@ public class CameraController {
         }
 
         BlockingQueue<Exception> exceptionQueue = new LinkedBlockingQueue<>();
-        CameraThread cameraThread = new CameraThread(storageRepository, camera.getName(), camera.getUrl(), exceptionQueue);
+        CameraThread cameraThread = new CameraThread(storageRepository, camera.getName(), camera.getUrl(), durationRecord, exceptionQueue);
         cameraThread.start();
 
         try {
-            Exception exceptionHilo = exceptionQueue.poll(1,TimeUnit.SECONDS);
+            Exception exceptionHilo = exceptionQueue.poll(2,TimeUnit.SECONDS);
             if (exceptionHilo != null) {
                 throw exceptionHilo;
             }
@@ -105,7 +110,7 @@ public class CameraController {
             listCameraThread.getThreads().add(cameraThread);
             camera.setState(StateCamera.Recording);
             cameraRepository.save(camera);
-            CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
+            CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
             return ResponseEntity.ok(cameraDTO);
         } catch (Exception e) {
             throw new ConectionStorageException("Hubo un erro con la conexion");
@@ -133,7 +138,7 @@ public class CameraController {
 
         camera.setState(StateCamera.Stopped);
         cameraRepository.save(camera);
-        CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
+        CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
         return ResponseEntity.ok().body(cameraDTO);
     }
 
@@ -155,7 +160,7 @@ public class CameraController {
         reproductor.pauseRecord();
         camera.setState(StateCamera.Paused);
         cameraRepository.save(camera);
-        CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
+        CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
         return ResponseEntity.ok().body(cameraDTO);
     }
 
@@ -177,7 +182,7 @@ public class CameraController {
         reproductor.resumeRecord();
         camera.setState(StateCamera.Recording);
         cameraRepository.save(camera);
-        CameraDTO cameraDTO = CameraMapper.mapCameraToCameraDTO(camera);
+        CameraDTO cameraDTO = cameraMapper.mapCameraToCameraDTO(camera);
         return ResponseEntity.ok(cameraDTO);
     }
 
@@ -198,20 +203,32 @@ public class CameraController {
         }
 
         camera.setState(StateCamera.Stopped);
-        return ResponseEntity.ok(cameraRepository.save(camera));
+        Camera cameraSave = cameraRepository.save(camera);
+
+        return ResponseEntity.ok(cameraMapper.mapCameraToCameraDTO(cameraSave));
     }
 
     @GetMapping("/list")
-    public List<CameraDTO> listAllCamera(){
+    public ResponseEntity listAllCamera(){
         List<Camera> cameras = cameraRepository.findAll();
         if(listCameraThread.getThreads().isEmpty()){
             cameras.stream().forEach(camera -> camera.setState(StateCamera.Stopped));
             cameraRepository.saveAll(cameras);
         }
 
-        return CameraMapper.mapCameraToCameraDTO(cameras);
+        return ResponseEntity.ok(cameraMapper.mapCameraToCameraDTO(cameras));
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteCamera(@RequestParam(value = "idCamera") String idCamera){
+        Camera camera = cameraRepository.findById(idCamera);
+        if (camera == null){
+            return ResponseEntity.badRequest().body("Esta camara no existe");
+        }
+
+        cameraRepository.delete(camera);
+        return ResponseEntity.ok("Se ha eliminado la camara exitosamente");
+    }
 
     
 }

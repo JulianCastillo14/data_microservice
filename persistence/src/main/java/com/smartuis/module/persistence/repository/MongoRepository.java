@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Repository
-public class MessageRepository implements com.smartuis.module.domian.repository.MessageRepository, FilterQuery, TemporaryQuery {
+public class MongoRepository implements com.smartuis.module.domian.repository.MessageRepository, FilterQuery, TemporaryQuery {
 
     private IMessageRepository iMessageRepository;
 
-    public MessageRepository(IMessageRepository iMessageRepository) {
+    public MongoRepository(IMessageRepository iMessageRepository) {
         this.iMessageRepository = iMessageRepository;
     }
 

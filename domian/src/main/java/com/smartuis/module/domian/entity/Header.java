@@ -16,10 +16,10 @@ public class Header implements Cloneable{
 
     }
 
-    public Header(String userUUID, String deviceId, String location, String topic, Boolean shouldRequeue){
+    public Header(String userUUID, String deviceId, Instant timeStamp ,String location, String topic, Boolean shouldRequeue){
         this.userUUID = userUUID;
         this.deviceId = deviceId;
-        timeStamp = Instant.now();
+        this.timeStamp = timeStamp;
         this.location = location;
         this.topic = topic;
         this.shouldRequeue = shouldRequeue;

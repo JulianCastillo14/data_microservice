@@ -1,7 +1,7 @@
 package com.smartuis.module.application.controller;
 
 import com.smartuis.module.domian.entity.Message;
-import com.smartuis.module.persistence.repository.MessageRepository;
+import com.smartuis.module.persistence.repository.MongoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +12,9 @@ import java.util.List;
 @RequestMapping("/mongo")
 public class MongoController {
 
-    private MessageRepository messageRepository;
+    private MongoRepository messageRepository;
 
-    public MongoController(MessageRepository messageRepository) {
+    public MongoController(MongoRepository messageRepository) {
         this.messageRepository = messageRepository;
     }
 

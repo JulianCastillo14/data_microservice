@@ -20,8 +20,7 @@ public class FluxRecordMapper {
                 Double value = (Double) record.getValues().get("_value");
                 Instant time = (Instant) record.getValues().get("_time");
 
-                Header header = new Header(null, null, location, null, null);
-                header.setTimeStamp(time);
+                Header header = new Header(null, null, time, location, null, null);
                 Metric metric = new Metric(measurement, value);
 
                 messages.add(new Message(header, List.of(metric)));

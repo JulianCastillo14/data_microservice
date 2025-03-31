@@ -26,6 +26,12 @@ public class CameraDBRepository implements CameraRepository {
     }
 
     @Override
+    public Camera delete(Camera camera) {
+        iCameraRepository.delete(camera);
+        return camera;
+    }
+
+    @Override
     public List<Camera> findAll() {
         return iCameraRepository.findAll();
     }

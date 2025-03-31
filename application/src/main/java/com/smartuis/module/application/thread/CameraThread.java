@@ -24,16 +24,16 @@ public class CameraThread extends Thread {
     private Boolean paused;
     private final String extension;
     private BlockingQueue<Exception> exceptionQueue;
-    @Value("{video.duration}")
-    long duration;
+    private long duration;
 
-    public CameraThread(StorageRepository storageRepository, String idThread, String urlConnect, BlockingQueue<Exception> exceptionQueue){
+    public CameraThread(StorageRepository storageRepository, String idThread, String urlConnect, long durationMin, BlockingQueue<Exception> exceptionQueue){
         this.storageRepository = storageRepository;
         this.idThread = idThread;
         this.urlConnect = urlConnect;
         this.paused = false;
         this.extension = "mp4";
         this.exceptionQueue = exceptionQueue;
+        this.duration = durationMin*60*1000;
     }
 
     @Override
@@ -62,8 +62,8 @@ public class CameraThread extends Thread {
                 recorder.start();
                 long lastTime = System.currentTimeMillis();
                 long activeTimeElapsed = 0;
-
-                while (activeTimeElapsed < duration && !isInterrupted()) {
+                System.out.println(this.duration);
+                while (activeTimeElapsed < this.duration && !isInterrupted()) {
                     synchronized (this) {
                         while (paused) {
                             System.out.println("pausado");

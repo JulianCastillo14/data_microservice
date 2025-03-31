@@ -9,11 +9,11 @@ import java.util.List;
 @Component
 public class CameraMapper {
 
-    public static CameraDTO mapCameraToCameraDTO(Camera camera){
+    public CameraDTO mapCameraToCameraDTO(Camera camera){
         return new CameraDTO(camera.getId(), camera.getName(), camera.getState());
     }
 
-    public static List<CameraDTO> mapCameraToCameraDTO(List<Camera> cameras){
+    public List<CameraDTO> mapCameraToCameraDTO(List<Camera> cameras){
         return cameras.stream().map(camera->
                         new CameraDTO(camera.getId(), camera.getName(), camera.getState()))
                 .toList();

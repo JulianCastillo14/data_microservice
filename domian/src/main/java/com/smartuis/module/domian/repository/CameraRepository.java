@@ -10,6 +10,8 @@ public interface CameraRepository {
 
     Camera save(Camera camera);
 
+    Camera delete(Camera camera);
+
     List<Camera> findAll();
 
     List<Camera> saveAll(List<Camera> cameras);

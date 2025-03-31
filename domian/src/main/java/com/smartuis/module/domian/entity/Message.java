@@ -6,23 +6,23 @@ import java.util.List;
 
 @Document(collection = "messages")
 public class Message {
-    private Header headers;
+    private Header header;
     private List<Metric> metrics;
 
     public Message() {
     }
 
-    public Message(Header headers, List<Metric> metrics) {
-        this.headers = headers;
+    public Message(Header header, List<Metric> metrics) {
+        this.header = header;
         this.metrics = metrics;
     }
 
     public Header getHeader() {
-        return headers;
+        return header;
     }
 
     public void setHeader(Header headers) {
-        this.headers = headers;
+        this.header = headers;
     }
 
     public List<Metric> getMetrics() {
@@ -36,7 +36,7 @@ public class Message {
     @Override
     public String toString() {
         return "Message{" +
-                "headers=" + headers +
+                "headers=" + header +
                 ", metrics=" + metrics +
                 '}';
     }
