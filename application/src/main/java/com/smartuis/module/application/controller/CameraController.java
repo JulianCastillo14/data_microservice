@@ -9,6 +9,7 @@ import com.smartuis.module.domian.entity.CameraDTO;
 import com.smartuis.module.domian.entity.StateCamera;
 import com.smartuis.module.domian.repository.CameraRepository;
 import com.smartuis.module.domian.repository.StorageRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -45,6 +46,7 @@ public class CameraController {
     }
 
 
+    @Operation(summary = "Inicia la transmisión en vivo de una cámara", description = "Obtiene el flujo de video en tiempo real de la cámara especificada por su ID.")
     @GetMapping(value = "/stream", produces = "multipart/x-mixed-replace;boundary=frame" )
     public void startStream(HttpServletResponse response, @RequestParam(value = "idCamera") String idCamera) throws Exception {
         Camera camera = cameraRepository.findById(idCamera);
@@ -83,6 +85,7 @@ public class CameraController {
         grabber.stop();
     }
 
+    @Operation(summary = "Comienza la grabación de una cámara", description = "Inicia la grabación de video de la cámara especificada por su ID.")
     @GetMapping("/start")
     public ResponseEntity startStream(@RequestParam(value = "idCamera") String idCamera)   {
         Camera camera = cameraRepository.findById(idCamera);
@@ -119,6 +122,7 @@ public class CameraController {
 
     }
 
+    @Operation(summary = "Detiene la grabación de una cámara", description = "Finaliza la grabación de video de la cámara especificada por su ID.")
     @GetMapping("/stop")
     public ResponseEntity stopStream(@RequestParam(value = "idCamera") String idCamera)   {
         Camera camera = cameraRepository.findById(idCamera);
@@ -142,6 +146,7 @@ public class CameraController {
         return ResponseEntity.ok().body(cameraDTO);
     }
 
+    @Operation(summary = "Pausa la grabación de una cámara", description = "Suspende temporalmente la grabación de video de la cámara especificada por su ID.")
     @GetMapping("/pause")
     public ResponseEntity pauseStream(@RequestParam(value = "idCamera") String idCamera)   {
 
@@ -164,6 +169,7 @@ public class CameraController {
         return ResponseEntity.ok().body(cameraDTO);
     }
 
+    @Operation(summary = "Reanuda la grabación de una cámara", description = "Continúa la grabación de video previamente pausada de la cámara especificada por su ID.")
     @GetMapping("/resume")
     public ResponseEntity resumeStream(@RequestParam(value = "idCamera") String idCamera)   {
 
@@ -186,7 +192,7 @@ public class CameraController {
         return ResponseEntity.ok(cameraDTO);
     }
 
-
+    @Operation(summary = "Añade una nueva cámara", description = "Registra una nueva cámara en el sistema con la información proporcionada.")
     @PostMapping("/add")
     public ResponseEntity addCamera(@RequestBody @Valid Camera camera){
 
@@ -208,6 +214,7 @@ public class CameraController {
         return ResponseEntity.ok(cameraMapper.mapCameraToCameraDTO(cameraSave));
     }
 
+    @Operation(summary = "Lista todas las cámaras", description = "Recupera una lista de todas las cámaras registradas en el sistema.")
     @GetMapping("/list")
     public ResponseEntity listAllCamera(){
         List<Camera> cameras = cameraRepository.findAll();
@@ -219,6 +226,7 @@ public class CameraController {
         return ResponseEntity.ok(cameraMapper.mapCameraToCameraDTO(cameras));
     }
 
+    @Operation(summary = "Elimina una cámara", description = "Borra la cámara especificada por su ID del sistema.")
     @DeleteMapping("/delete")
     public ResponseEntity deleteCamera(@RequestParam(value = "idCamera") String idCamera){
         Camera camera = cameraRepository.findById(idCamera);
