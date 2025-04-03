@@ -7,6 +7,7 @@ import io.minio.ObjectWriteResponse;
 import io.minio.SnowballObject;
 import io.minio.UploadSnowballObjectsArgs;
 import io.minio.errors.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,8 @@ import java.util.List;
 public class MinioRepository implements StorageRepository {
 
     private MinioClient minioClient;
+    @Value("S{minio.bucket}")
+    private String bucketName;
 
     public MinioRepository(MinioClient minioClient) {
         this.minioClient = minioClient;
@@ -36,7 +39,7 @@ public class MinioRepository implements StorageRepository {
 
             ObjectWriteResponse minioResponse = minioClient.uploadSnowballObjects(
                     UploadSnowballObjectsArgs.builder()
-                            .bucket("iot")
+                            .bucket(bucketName)
                             .objects(objects)
                             .build()
             );
@@ -57,7 +60,7 @@ public class MinioRepository implements StorageRepository {
 
             ObjectWriteResponse minioResponse = minioClient.uploadSnowballObjects(
                     UploadSnowballObjectsArgs.builder()
-                            .bucket("iot")
+                            .bucket(bucketName)
                             .objects(objects)
                             .build()
             );

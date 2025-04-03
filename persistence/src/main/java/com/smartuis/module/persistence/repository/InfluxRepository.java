@@ -13,6 +13,7 @@ import com.smartuis.module.domian.repository.StatisticsQuery;
 import com.smartuis.module.domian.repository.TemporaryQuery;
 import com.smartuis.module.persistence.config.InfluxDBConfig;
 import com.smartuis.module.persistence.mapper.FluxRecordMapper;
+import com.smartuis.module.persistence.service.MessageRequeueService;
 import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
@@ -25,18 +26,14 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
     private String bucket;
     private FluxRecordMapper fluxRecordMapper;
     private InfluxService influxService;
-    private MqttRequeueService mqttRequeueService;
-    private AmqpRequeueService  amqpRequeueService;
-    private DeviceRepository deviceRepository;
+    private MessageRequeueService messageRequeueService;
 
-    public InfluxRepository(InfluxDBClient influxDBClient, InfluxDBConfig influxDBConfig, InfluxService influxService, MqttRequeueService mqttRequeueService, AmqpRequeueService amqpRequeueService, DeviceRepository deviceRepository) {
+    public InfluxRepository(InfluxDBClient influxDBClient, InfluxDBConfig influxDBConfig, InfluxService influxService, MessageRequeueService  messageRequeueService) {
         this.influxDBClient = influxDBClient;
         this.bucket = influxDBConfig.getBucket();
         this.fluxRecordMapper = new FluxRecordMapper();
         this.influxService = influxService;
-        this.mqttRequeueService = mqttRequeueService;
-        this.amqpRequeueService = amqpRequeueService;
-        this.deviceRepository =  deviceRepository;
+        this.messageRequeueService = messageRequeueService;
     }
 
     @Override
@@ -52,24 +49,7 @@ public class InfluxRepository implements MessageRepository, TemporaryQuery, Stat
         data.forEach(point->writeApi.writeMeasurement(WritePrecision.NS, point));
 
         if (message.getHeader().getShouldRequeue()) {
-            String deviceId = message.getHeader().getDeviceId();
-            Optional<Device> deviceOpt = deviceRepository.findDeviceByDeviceId(deviceId);
-            List<Application> applications = deviceOpt.get().getApplications();
-
-            for(Application application : applications){
-                if(message.getHeader().getTopic().equals(application.getName())){
-                    Header header = (Header) message.getHeader().clone();
-                    Message  messageRequeue = new Message();
-                    messageRequeue.setHeader(header);
-                    messageRequeue.setMetrics(message.getMetrics());
-
-                    String newTopic = messageRequeue.getHeader().getTopic() + "/" + application.getApplicationId();
-                    messageRequeue.getHeader().setTopic(newTopic);
-                    mqttRequeueService.requeue(messageRequeue);
-                    amqpRequeueService.requeue(messageRequeue);
-                }
-            }
-
+            messageRequeueService.requeueMessage(message);
         }
         return message;
     }
