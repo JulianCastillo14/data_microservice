@@ -2,10 +2,7 @@ package com.smartuis.module.application.controller;
 
 import com.smartuis.module.domian.repository.StorageRepository;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -24,7 +21,7 @@ public class FileController {
                     "- El archivo se enviará en el cuerpo de la solicitud."
     )
     @PostMapping("/save")
-    void saveFile(@RequestBody MultipartFile file)  {
+    void saveFile(@RequestParam MultipartFile file)  {
         System.out.println(file.getOriginalFilename());
 
         storageRepository.saveFile(file, file.getOriginalFilename());

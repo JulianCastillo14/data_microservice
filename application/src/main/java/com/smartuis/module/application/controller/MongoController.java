@@ -49,7 +49,7 @@ public class MongoController {
             description = "Recupera una lista de mensajes entre dos fechas especificadas. \n" +
                     " - Las fechas de inicio y fin deben proporcionarse como parámetros de consulta en formato 'YYYY-MM-DD'."
     )
-    @GetMapping("/date")
+    @GetMapping("/by-time-range")
     public ResponseEntity<List<Message>> findMessagesByDateRange(@RequestParam String start, @RequestParam String end){
         Instant startDate = Instant.parse(start + "T00:00:00Z");
         Instant endDate = Instant.parse(end + "T23:59:59Z");
@@ -86,7 +86,7 @@ public class MongoController {
                     "- El tipo de medición se proporciona como un parámetro de consulta llamado 'measurement'. " +
                     "- Las fechas de inicio y fin deben proporcionarse como parámetros de consulta llamados 'start' y 'end', respectivamente, en formato 'YYYY-MM-DD'."
     )
-    @GetMapping("/measurement/range")
+    @GetMapping("/measurement/by-time-range")
     public ResponseEntity<List<Message>> findMeasurementsByTimeRange(@RequestParam String measurement, @RequestParam String start, @RequestParam String end){
         Instant fromDate = Instant.parse(start + "T00:00:00Z");
         Instant toDate = Instant.parse(end + "T23:59:59Z");

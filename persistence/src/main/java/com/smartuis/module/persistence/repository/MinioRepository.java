@@ -24,7 +24,7 @@ import java.util.List;
 public class MinioRepository implements StorageRepository {
 
     private MinioClient minioClient;
-    @Value("S{minio.bucket}")
+    @Value("${minio.bucket}")
     private String bucketName;
 
     public MinioRepository(MinioClient minioClient) {
