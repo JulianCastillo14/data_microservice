@@ -1,42 +1,32 @@
 
 # Repositorio Microservicio de Datos/Mensajes IoT
 
-En este repositorio se encuentra el código fuente del microservicio de almacenamiento de datos para la plataforma Smart Campus IoT UIS. 
+En este repositorio se encuentra el código fuente del microservicio de almacenamiento de datos para la plataforma Smart Campus IoT UIS.
 
-El microservicio está desarrollado en las siguientes tecnologías: 
+El microservicio está desarrollado en las siguientes tecnologías:
 
-- Java 11
-- Spring Boot 2.7.11
-Dependencias:
-- Spring Data MongoDB
-- Spring Web
-- MQTT integration. 
-- Gson
-- Lombok
+- Java 21
+- Spring Boot 3.4.2
+- InfluxDB 2.7 (docker influxdb:2.7)
+- MongoDB (docker mongo latest)
+- MinIO (docker quay.io/minio/minio)
+- RabbitMQ 4.0-management (docker rabbitmq:4.0-management)
+- EMQX 5.8 (docker emqx:5.8)
 
-El proyecto cuenta con los siguientes directorios internos: 
+## Modulos del proyecto
 
-- **CONFIG**: Directorio para los archivos de configuración del microservico como el archivo de configuración de CORS y el SaggerConfig.
+| Módulo         | Propósito                                                                                         |
+| -------------- |---------------------------------------------------------------------------------------------------|
+| **application** | Exposición de endpoints REST, configuración de brokers EMQX Y RabbitMQ, manejo de CORS y Swagger. |
+| **domain**      | Entidades de negocio y contratos de repositorio (interfaces).                                     |
+| **service**     | Lógica de reencolado MQTT/AMQP y consultas a InfluxDB.                                            |
+| **persistence** | Implementación para MongoDB, MinIO y InfluxDB.                                                    |
 
-- **Controller**: Para los controladores de las HTTP Request.
+## Arquitectura 
 
-- **Documents**: Directorio para los modelos que representan los documentos que serán almacenados en MongoDB.
+![Diagrama de Arquitectura Onion](docs/images/Arquitectura_modulo_datos.jpg)
 
-- **Dto**: Para las clases POJO de la applicación.
-
-- **Repository**: Configuración de acceso a repositorio de datos de MongoDB.
-
-- **Service**: Implementación de los servicios internos como el servicio de procesamiento de datos para MQTT y el servicio que expone los datos por API REST. 
-
-
-Este servicio está diseñado para ejecutarse en un contenedor donde existen las siguientes variables de entorno: 
-
-- **MONGO_HOST**: IP Host de la base de datos MongoDB.
-- **BROKER_IP**: IP Broker MQTT. 
-
-Para agregar variables adionales se debe modificar el application.yml y para MQTT revisar MessagesApplication.java.
-
-## API Document. 
+## API Document.
 
 Para conocer los EndPoin de la API que expone el microservicio se instalo el paquete de Swagger que permite documenta fácilmente, para acceder se expone por la URL base del servicio + */swagger-ui.html#/*
 

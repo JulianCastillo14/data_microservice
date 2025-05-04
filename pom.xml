@@ -10,7 +10,7 @@
 	</parent>
 	<modules>
 		<module>application</module>
-		<module>domian</module>
+		<module>domain</module>
 		<module>service</module>
 		<module>persistence</module>
 	</modules>
