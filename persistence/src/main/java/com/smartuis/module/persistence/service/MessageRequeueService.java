@@ -28,8 +28,9 @@ public class MessageRequeueService {
 
     public void requeueMessage(Message message) {
         String deviceId = message.getHeader().getDeviceId();
-        Optional<Device> deviceOpt = deviceRepository.findDeviceByDeviceId(deviceId);
-        List<Application> applications = deviceOpt.get().getApplications();
+        Device deviceOpt = deviceRepository.findDeviceByDeviceId(deviceId)
+                .orElseThrow(() -> new IllegalArgumentException("Dispositivo no encontrado: " + deviceId));
+        List<Application> applications = deviceOpt.getApplications();
 
         for(Application application : applications){
             if(message.getHeader().getTopic().equals(application.getName())){
