@@ -1,8 +1,8 @@
 package com.smartuis.module.persistence.repository;
 
-import com.smartuis.module.domian.entity.Message;
-import com.smartuis.module.domian.repository.FilterQuery;
-import com.smartuis.module.domian.repository.TemporaryQuery;
+import com.smartuis.module.domain.entity.Message;
+import com.smartuis.module.domain.repository.FilterQuery;
+import com.smartuis.module.domain.repository.TemporaryQuery;
 import com.smartuis.module.persistence.exceptions.UnitsTimeException;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Repository
-public class MongoRepository implements com.smartuis.module.domian.repository.MessageRepository, FilterQuery, TemporaryQuery {
+public class MongoRepository implements com.smartuis.module.domain.repository.MessageRepository, FilterQuery, TemporaryQuery {
 
     private IMessageRepository iMessageRepository;
 

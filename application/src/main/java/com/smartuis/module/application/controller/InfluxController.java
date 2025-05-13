@@ -1,7 +1,7 @@
 package com.smartuis.module.application.controller;
 
 import com.smartuis.module.application.mapper.MessageMapper;
-import com.smartuis.module.domian.entity.*;
+import com.smartuis.module.domain.entity.*;
 import com.smartuis.module.persistence.repository.InfluxRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;

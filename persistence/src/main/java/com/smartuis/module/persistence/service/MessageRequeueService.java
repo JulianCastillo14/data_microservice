@@ -1,15 +1,14 @@
 package com.smartuis.module.persistence.service;
 
-import com.module.service.impl.AmqpRequeueService;
-import com.module.service.impl.MqttRequeueService;
-import com.smartuis.module.domian.entity.Application;
-import com.smartuis.module.domian.entity.Device;
-import com.smartuis.module.domian.entity.Header;
-import com.smartuis.module.domian.entity.Message;
+import com.smartuis.module.service.impl.AmqpRequeueService;
+import com.smartuis.module.service.impl.MqttRequeueService;
+import com.smartuis.module.domain.entity.Application;
+import com.smartuis.module.domain.entity.Device;
+import com.smartuis.module.domain.entity.Header;
+import com.smartuis.module.domain.entity.Message;
 import com.smartuis.module.persistence.repository.DeviceRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MessageRequeueService {
@@ -28,8 +27,12 @@ public class MessageRequeueService {
 
     public void requeueMessage(Message message) {
         String deviceId = message.getHeader().getDeviceId();
-        Device deviceOpt = deviceRepository.findDeviceByDeviceId(deviceId)
-                .orElseThrow(() -> new IllegalArgumentException("Dispositivo no encontrado: " + deviceId));
+        Device deviceOpt = deviceRepository.findDeviceByDeviceId(deviceId).orElse(null);
+
+        if(deviceOpt == null){
+            return;
+        }
+
         List<Application> applications = deviceOpt.getApplications();
 
         for(Application application : applications){

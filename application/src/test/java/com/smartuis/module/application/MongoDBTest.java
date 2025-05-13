@@ -1,8 +1,8 @@
 package com.smartuis.module.application;
 
-import com.smartuis.module.domian.entity.Header;
-import com.smartuis.module.domian.entity.Message;
-import com.smartuis.module.domian.entity.Metric;
+import com.smartuis.module.domain.entity.Header;
+import com.smartuis.module.domain.entity.Message;
+import com.smartuis.module.domain.entity.Metric;
 import com.smartuis.module.persistence.exceptions.UnitsTimeException;
 import com.smartuis.module.persistence.repository.MongoRepository;
 import com.smartuis.module.persistence.repository.IMessageRepository;

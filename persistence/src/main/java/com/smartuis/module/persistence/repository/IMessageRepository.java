@@ -1,6 +1,6 @@
 package com.smartuis.module.persistence.repository;
 
-import com.smartuis.module.domian.entity.Message;
+import com.smartuis.module.domain.entity.Message;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

@@ -1,5 +1,6 @@
 package com.smartuis.module.application.controller;
 
+import com.smartuis.module.application.exceptions.CameraNullExecption;
 import com.smartuis.module.application.exceptions.ConectionStorageException;
 import com.smartuis.module.persistence.exceptions.UnitsTimeException;
 import com.smartuis.module.persistence.exceptions.UploadFileException;
@@ -43,5 +44,10 @@ public class ControllerException {
             errorMap.put(error.getField(), error.getDefaultMessage());
         });
         return ResponseEntity.badRequest().body(errorMap);
+    }
+
+    @ExceptionHandler(CameraNullExecption.class)
+    public ResponseEntity CameraNullExecption(CameraNullExecption cameraNullExecption){
+        return ResponseEntity.badRequest().body(cameraNullExecption.getMessage());
     }
 }

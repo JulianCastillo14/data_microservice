@@ -1,6 +1,6 @@
 package com.smartuis.module.persistence.repository;
 
-import com.smartuis.module.domian.entity.Camera;
+import com.smartuis.module.domain.entity.Camera;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

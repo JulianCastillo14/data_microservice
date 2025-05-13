@@ -2,9 +2,9 @@ package com.smartuis.module.persistence.mapper;
 
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
-import com.smartuis.module.domian.entity.Header;
-import com.smartuis.module.domian.entity.Message;
-import com.smartuis.module.domian.entity.Metric;
+import com.smartuis.module.domain.entity.Header;
+import com.smartuis.module.domain.entity.Message;
+import com.smartuis.module.domain.entity.Metric;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

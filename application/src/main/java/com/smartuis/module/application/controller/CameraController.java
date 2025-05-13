@@ -1,14 +1,15 @@
 package com.smartuis.module.application.controller;
 
+import com.smartuis.module.application.exceptions.CameraNullExecption;
 import com.smartuis.module.application.thread.ListCameraThread;
 import com.smartuis.module.application.thread.CameraThread;
 import com.smartuis.module.application.exceptions.ConectionStorageException;
 import com.smartuis.module.application.mapper.CameraMapper;
-import com.smartuis.module.domian.entity.Camera;
-import com.smartuis.module.domian.entity.CameraDTO;
-import com.smartuis.module.domian.entity.StateCamera;
-import com.smartuis.module.domian.repository.CameraRepository;
-import com.smartuis.module.domian.repository.StorageRepository;
+import com.smartuis.module.domain.entity.Camera;
+import com.smartuis.module.domain.entity.CameraDTO;
+import com.smartuis.module.domain.entity.StateCamera;
+import com.smartuis.module.domain.repository.CameraRepository;
+import com.smartuis.module.domain.repository.StorageRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -48,19 +50,34 @@ public class CameraController {
 
     @Operation(summary = "Inicia la transmisión en vivo de una cámara", description = "Obtiene el flujo de video en tiempo real de la cámara especificada por su ID.")
     @GetMapping(value = "/stream", produces = "multipart/x-mixed-replace;boundary=frame" )
-    public void startStream(HttpServletResponse response, @RequestParam(value = "idCamera") String idCamera) throws Exception {
+    public void startStream(HttpServletResponse response, @RequestParam(value = "idCamera") String idCamera) {
         Camera camera = cameraRepository.findById(idCamera);
 
-        response.setContentType("multipart/x-mixed-replace;boundary=frame");
+        if (camera == null){
+            throw  new CameraNullExecption("Esta camara no existe");
+        }
 
+        response.setContentType("multipart/x-mixed-replace;boundary=frame");
         String rtspUrl = camera.getUrl();
         FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(rtspUrl);
-        grabber.start();
+        try{
+            grabber.setOption("rtsp_transport", "tcp");
+            grabber.start();
+        } catch (FFmpegFrameGrabber.Exception e) {
+            throw new RuntimeException(e);
+        }
+
 
         Java2DFrameConverter converter = new Java2DFrameConverter();
 
         while (true) {
-            Frame frame = grabber.grab();
+
+            Frame frame = null;
+            try {
+                frame = grabber.grab();
+            } catch (FFmpegFrameGrabber.Exception e) {
+                throw new RuntimeException(e);
+            }
             if (frame == null) {
                 break;
             }
@@ -70,19 +87,29 @@ public class CameraController {
                 continue;
             }
 
+            try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(bufferedImage, "jpg", baos);
             byte[] imageBytes = baos.toByteArray();
 
-            response.getOutputStream().write(("--frame\r\n" +
-                    "Content-Type: image/jpeg\r\n" +
-                    "Content-Length: " + imageBytes.length + "\r\n\r\n").getBytes());
-            response.getOutputStream().write(imageBytes);
-            response.getOutputStream().write("\r\n".getBytes());
-            response.getOutputStream().flush();
+
+                response.getOutputStream().write(("--frame\r\n" +
+                        "Content-Type: image/jpeg\r\n" +
+                        "Content-Length: " + imageBytes.length + "\r\n\r\n").getBytes());
+                response.getOutputStream().write(imageBytes);
+                response.getOutputStream().write("\r\n".getBytes());
+                response.getOutputStream().flush();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
         }
-        grabber.stop();
+        try {
+            grabber.stop();
+        } catch (FFmpegFrameGrabber.Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Operation(summary = "Comienza la grabación de una cámara", description = "Inicia la grabación de video de la cámara especificada por su ID.")
@@ -103,9 +130,9 @@ public class CameraController {
         BlockingQueue<Exception> exceptionQueue = new LinkedBlockingQueue<>();
         CameraThread cameraThread = new CameraThread(storageRepository, camera.getName(), camera.getUrl(), durationRecord, exceptionQueue);
         cameraThread.start();
-
+        System.out.println("duracion:" + durationRecord);
         try {
-            Exception exceptionHilo = exceptionQueue.poll(2,TimeUnit.SECONDS);
+            Exception exceptionHilo = exceptionQueue.poll(3,TimeUnit.SECONDS);
             if (exceptionHilo != null) {
                 throw exceptionHilo;
             }

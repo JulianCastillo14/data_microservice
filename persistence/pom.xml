@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>com.smartuis.module</groupId>
-            <artifactId>domian</artifactId>
+            <artifactId>domain</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -1,7 +1,7 @@
 package com.smartuis.module.application.mapper;
 
-import com.smartuis.module.domian.entity.Camera;
-import com.smartuis.module.domian.entity.CameraDTO;
+import com.smartuis.module.domain.entity.Camera;
+import com.smartuis.module.domain.entity.CameraDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

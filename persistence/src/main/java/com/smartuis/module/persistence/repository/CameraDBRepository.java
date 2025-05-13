@@ -1,7 +1,7 @@
 package com.smartuis.module.persistence.repository;
 
-import com.smartuis.module.domian.entity.Camera;
-import com.smartuis.module.domian.repository.CameraRepository;
+import com.smartuis.module.domain.entity.Camera;
+import com.smartuis.module.domain.repository.CameraRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

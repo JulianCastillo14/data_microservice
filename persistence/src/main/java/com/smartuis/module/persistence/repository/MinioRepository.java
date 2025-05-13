@@ -1,6 +1,6 @@
 package com.smartuis.module.persistence.repository;
 
-import com.smartuis.module.domian.repository.StorageRepository;
+import com.smartuis.module.domain.repository.StorageRepository;
 import com.smartuis.module.persistence.exceptions.UploadFileException;
 import io.minio.MinioClient;
 import io.minio.ObjectWriteResponse;

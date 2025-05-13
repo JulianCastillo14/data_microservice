@@ -1,6 +1,6 @@
 package com.smartuis.module.application.controller;
 
-import com.smartuis.module.domian.repository.StorageRepository;
+import com.smartuis.module.domain.repository.StorageRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,9 +1,8 @@
 package com.smartuis.module.application.controller;
 
-import com.smartuis.module.domian.entity.Message;
+import com.smartuis.module.domain.entity.Message;
 import com.smartuis.module.persistence.repository.MongoRepository;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

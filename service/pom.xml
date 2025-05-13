@@ -28,9 +28,8 @@
         </dependency>
         <dependency>
             <groupId>com.smartuis.module</groupId>
-            <artifactId>domian</artifactId>
+            <artifactId>domain</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.amqp</groupId>

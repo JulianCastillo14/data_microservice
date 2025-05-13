@@ -1,8 +1,8 @@
 package com.smartuis.module.application.amqp;
 
 
-import com.smartuis.module.domian.entity.Message;
-import com.smartuis.module.domian.repository.MessageRepository;
+import com.smartuis.module.domain.entity.Message;
+import com.smartuis.module.domain.repository.MessageRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

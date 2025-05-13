@@ -1,9 +1,9 @@
 package com.smartuis.module.application.mapper;
 
-import com.smartuis.module.domian.entity.DataDTO;
-import com.smartuis.module.domian.entity.Header;
-import com.smartuis.module.domian.entity.Message;
-import com.smartuis.module.domian.entity.Metric;
+import com.smartuis.module.domain.entity.DataDTO;
+import com.smartuis.module.domain.entity.Header;
+import com.smartuis.module.domain.entity.Message;
+import com.smartuis.module.domain.entity.Metric;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

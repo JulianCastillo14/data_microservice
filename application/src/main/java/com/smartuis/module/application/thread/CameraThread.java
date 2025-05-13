@@ -1,19 +1,12 @@
 package com.smartuis.module.application.thread;
 
 import com.smartuis.module.application.exceptions.ConectionStorageException;
-import com.smartuis.module.domian.repository.StorageRepository;
-import com.smartuis.module.persistence.exceptions.UnitsTimeException;
-import com.smartuis.module.persistence.exceptions.UploadFileException;
+import com.smartuis.module.domain.repository.StorageRepository;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.File;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.concurrent.BlockingQueue;
 
 public class CameraThread extends Thread {
@@ -41,28 +34,41 @@ public class CameraThread extends Thread {
 
         try {
             startRecord(this.urlConnect);
-        } catch (FFmpegFrameRecorder.Exception | FFmpegFrameGrabber.Exception | InterruptedException e) {
+        } catch (FFmpegFrameRecorder.Exception | InterruptedException | FrameGrabber.Exception e) {
             exceptionQueue.offer(new ConectionStorageException("Hubo un erro con la conexion"));
         }
     }
 
-    public void startRecord(String urlConexion) throws FFmpegFrameGrabber.Exception, InterruptedException, FFmpegFrameRecorder.Exception {
+    public void startRecord(String urlConexion) throws FrameGrabber.Exception, InterruptedException, FFmpegFrameRecorder.Exception {
 
-            String fileTempName = "application/" + idThread + "." + extension;
-            FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(urlConexion);
-            grabber.start();
+        String fileTempName = "application/" + idThread + "." + extension;
+        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(urlConexion);
+        grabber.setOption("rtsp_transport", "tcp");
+        grabber.start();
 
-            while (!isInterrupted()) {
-                var recorder = new FFmpegFrameRecorder(fileTempName, grabber.getImageWidth(), grabber.getImageHeight(), grabber.getAudioChannels());
-                recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-                recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+        int imageWidth = grabber.getImageWidth();
+        int imageHeight = grabber.getImageHeight();
+        int audioChannels = grabber.getAudioChannels();
+        int sampleRate = grabber.getSampleRate();
+        double frameRate = grabber.getFrameRate();
+
+        while (!isInterrupted()) {
+            System.out.println("duracion dentro el hilo:" + this.duration);
+            FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(fileTempName, imageWidth, imageHeight, 0);
                 recorder.setFormat(extension);
-                recorder.setFrameRate(grabber.getFrameRate());
+                recorder.setFrameRate(frameRate);
+                recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+                //recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+                //recorder.setAudioBitrate(128000);
+                //recorder.setSampleRate(sampleRate);
+                //recorder.setAudioChannels(audioChannels);
+
 
                 recorder.start();
+
                 long lastTime = System.currentTimeMillis();
                 long activeTimeElapsed = 0;
-                System.out.println(this.duration);
+
                 while (activeTimeElapsed < this.duration && !isInterrupted()) {
                     synchronized (this) {
                         while (paused) {
@@ -73,9 +79,16 @@ public class CameraThread extends Thread {
                     }
 
                     System.out.println("grabando");
-                    Frame frame = grabber.grab();
-                    if (frame == null) continue;
-                    recorder.record(frame);
+
+                    Frame img = grabber.grabImage();
+                    if (img != null) {
+                        recorder.record(img);
+                    }
+
+                    /*Frame snd = grabber.grabSamples();
+                    if (snd != null) {
+                        recorder.record(snd);
+                    }*/
 
                     long now = System.currentTimeMillis();
                     activeTimeElapsed += (now - lastTime);

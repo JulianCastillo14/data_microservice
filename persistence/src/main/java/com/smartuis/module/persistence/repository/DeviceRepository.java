@@ -1,6 +1,6 @@
 package com.smartuis.module.persistence.repository;
 
-import com.smartuis.module.domian.entity.Device;
+import com.smartuis.module.domain.entity.Device;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
