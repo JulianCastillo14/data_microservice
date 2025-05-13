@@ -30,3 +30,8 @@ El microservicio está desarrollado en las siguientes tecnologías:
 
 Para conocer los EndPoin de la API que expone el microservicio se instalo el paquete de Swagger que permite documenta fácilmente, para acceder se expone por la URL base del servicio + */swagger-ui.html#/*
 
+## Configuración del Entorno
+
+Para ejecutar correctamente el microservicio, es necesario configurar las variables de entorno requeridas. Esto se logra mediante un archivo `.env` que debe estar ubicado en el directorio raíz del proyecto. Este archivo debe contener las variables necesarias para la configuración de las conexiones a las bases de datos, servicios de mensajería, almacenamiento, entre otros.
+
+Para más detalles sobre cómo crear y configurar el archivo `.env`, consulta la sección correspondiente en la [Configuración del archivo .env](https://github.com/JulianCastillo14/data_microservice/wiki/Configuraci%C3%B3n-del-archivo-.env)
