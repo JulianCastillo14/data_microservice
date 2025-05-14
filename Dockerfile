@@ -31,7 +31,7 @@ RUN apt-get update \
 
 # Establecemos el directorio de trabajo de la aplicación
 WORKDIR /app
-
+RUN mkdir -p /app/application
 # Copiamos el .jar generado desde la imagen 'builder'
 COPY --from=builder /data_microservice/application/target/*.jar app.jar
 

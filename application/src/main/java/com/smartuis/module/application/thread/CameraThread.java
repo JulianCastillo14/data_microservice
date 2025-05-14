@@ -36,12 +36,13 @@ public class CameraThread extends Thread {
             startRecord(this.urlConnect);
         } catch (FFmpegFrameRecorder.Exception | InterruptedException | FrameGrabber.Exception e) {
             exceptionQueue.offer(new ConectionStorageException("Hubo un erro con la conexion"));
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
     public void startRecord(String urlConexion) throws FrameGrabber.Exception, InterruptedException, FFmpegFrameRecorder.Exception {
 
-        String fileTempName = "application/" + idThread + "." + extension;
+        String fileTempName = "./application/" + idThread + "." + extension;
         FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(urlConexion);
         grabber.setOption("rtsp_transport", "tcp");
         grabber.start();
@@ -54,14 +55,14 @@ public class CameraThread extends Thread {
 
         while (!isInterrupted()) {
             System.out.println("duracion dentro el hilo:" + this.duration);
-            FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(fileTempName, imageWidth, imageHeight, 0);
+            FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(fileTempName, imageWidth, imageHeight, audioChannels);
                 recorder.setFormat(extension);
                 recorder.setFrameRate(frameRate);
                 recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-                //recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
-                //recorder.setAudioBitrate(128000);
-                //recorder.setSampleRate(sampleRate);
-                //recorder.setAudioChannels(audioChannels);
+                recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+                recorder.setAudioBitrate(128000);
+                recorder.setSampleRate(sampleRate);
+                recorder.setAudioChannels(audioChannels);
 
 
                 recorder.start();
@@ -80,7 +81,7 @@ public class CameraThread extends Thread {
 
                     System.out.println("grabando");
 
-                    Frame img = grabber.grabImage();
+                    Frame img = grabber.grabFrame();
                     if (img != null) {
                         recorder.record(img);
                     }
