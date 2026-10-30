@@ -39,7 +39,19 @@
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
-            <artifactId>javacv-platform</artifactId>
+            <artifactId>javacv</artifactId>
+            <version>1.5.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>5.1.2-1.5.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacpp</artifactId>
             <version>1.5.8</version>
         </dependency>
         <dependency>
